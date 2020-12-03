@@ -1,0 +1,633 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>USB Analysis - Take 1</title><style>
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR'; }
+
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR'; }
+
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR'; }
+
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR'; }
+
+.highlight-default {
+}
+.highlight-gray {
+	color: rgb(155,154,151);
+}
+.highlight-brown {
+	color: rgb(100,71,58);
+}
+.highlight-orange {
+	color: rgb(217,115,13);
+}
+.highlight-yellow {
+	color: rgb(223,171,1);
+}
+.highlight-teal {
+	color: rgb(15,123,108);
+}
+.highlight-blue {
+	color: rgb(11,110,153);
+}
+.highlight-purple {
+	color: rgb(105,64,165);
+}
+.highlight-pink {
+	color: rgb(173,26,114);
+}
+.highlight-red {
+	color: rgb(224,62,62);
+}
+.highlight-gray_background {
+	background: rgb(235,236,237);
+}
+.highlight-brown_background {
+	background: rgb(233,229,227);
+}
+.highlight-orange_background {
+	background: rgb(250,235,221);
+}
+.highlight-yellow_background {
+	background: rgb(251,243,219);
+}
+.highlight-teal_background {
+	background: rgb(221,237,234);
+}
+.highlight-blue_background {
+	background: rgb(221,235,241);
+}
+.highlight-purple_background {
+	background: rgb(234,228,242);
+}
+.highlight-pink_background {
+	background: rgb(244,223,235);
+}
+.highlight-red_background {
+	background: rgb(251,228,228);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(55, 53, 47, 0.6);
+	fill: rgba(55, 53, 47, 0.6);
+}
+.block-color-brown {
+	color: rgb(100,71,58);
+	fill: rgb(100,71,58);
+}
+.block-color-orange {
+	color: rgb(217,115,13);
+	fill: rgb(217,115,13);
+}
+.block-color-yellow {
+	color: rgb(223,171,1);
+	fill: rgb(223,171,1);
+}
+.block-color-teal {
+	color: rgb(15,123,108);
+	fill: rgb(15,123,108);
+}
+.block-color-blue {
+	color: rgb(11,110,153);
+	fill: rgb(11,110,153);
+}
+.block-color-purple {
+	color: rgb(105,64,165);
+	fill: rgb(105,64,165);
+}
+.block-color-pink {
+	color: rgb(173,26,114);
+	fill: rgb(173,26,114);
+}
+.block-color-red {
+	color: rgb(224,62,62);
+	fill: rgb(224,62,62);
+}
+.block-color-gray_background {
+	background: rgb(235,236,237);
+}
+.block-color-brown_background {
+	background: rgb(233,229,227);
+}
+.block-color-orange_background {
+	background: rgb(250,235,221);
+}
+.block-color-yellow_background {
+	background: rgb(251,243,219);
+}
+.block-color-teal_background {
+	background: rgb(221,237,234);
+}
+.block-color-blue_background {
+	background: rgb(221,235,241);
+}
+.block-color-purple_background {
+	background: rgb(234,228,242);
+}
+.block-color-pink_background {
+	background: rgb(244,223,235);
+}
+.block-color-red_background {
+	background: rgb(251,228,228);
+}
+.select-value-color-default { background-color: rgba(206,205,202,0.5); }
+.select-value-color-gray { background-color: rgba(155,154,151, 0.4); }
+.select-value-color-brown { background-color: rgba(140,46,0,0.2); }
+.select-value-color-orange { background-color: rgba(245,93,0,0.2); }
+.select-value-color-yellow { background-color: rgba(233,168,0,0.2); }
+.select-value-color-green { background-color: rgba(0,135,107,0.2); }
+.select-value-color-blue { background-color: rgba(0,120,223,0.2); }
+.select-value-color-purple { background-color: rgba(103,36,222,0.2); }
+.select-value-color-pink { background-color: rgba(221,0,129,0.2); }
+.select-value-color-red { background-color: rgba(255,0,26,0.2); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="79281261-8dd2-4795-9439-fe0296d12211" class="page sans"><header><img class="page-cover-image" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/PXL_20201203_1116177812.jpg" style="object-position:center 59.99%"/><h1 class="page-title">USB Analysis - Take 1</h1></header><div class="page-body"><div id="56dea035-37ee-4952-bae5-c2772091bc36" class="column-list"><div id="4daf7e24-f4fd-4af6-987b-a5aaabfd35d3" style="width:18.75%" class="column"><nav id="08c05db1-651e-48a8-a079-3b06c428d63d" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#a5973839-1969-4ec0-b2b2-5f88313270aa">Methodology</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#69a9f5e1-3be7-41de-bc7c-67319a14286f">Deviation</a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#bf04cdd2-be91-419f-bd24-265c03c4a504">Method for Take 2</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#f3093d70-3cd5-47fc-9700-5ae004082c14">Findings</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#960d1a32-c0d6-4783-b6be-a6eec0287455">Overview</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#024d1115-129c-4f4f-abb2-37d1d4d2e9d6">Process Notes</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#375e1953-0021-4d69-a895-2287112c3e68">Observations</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#4a83a4be-8b4b-453d-a115-3a391c4ad1f9">Lessons learned</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#ce7e69ea-b10b-43e7-a2a0-ca7f755a6b55">Gaps in Knowledge </a></div></nav></div><div id="a40f30da-1439-4e2d-bda6-a8df888075b7" style="width:81.25%" class="column"><p id="e95459a5-be2a-4471-8df9-280e69ad5749" class="">The objective for this practical was to see what data I could find on a USB after performing a quick format, full format, and wipe. </p><p id="dfb137c3-e98c-41b4-9966-b5ac8d45c202" class="">This is my first approach at the task, which had deviated from the initial objective a fair bit as I explored a different approach. While I&#x27;m keen to return to the original task (which plans are detailed within the methodology), overall, I&#x27;m happy with how much I&#x27;ve learned and how much I now know I don&#x27;t know.</p></div></div><p id="faa70b75-a38a-4a48-a7bb-620eb31fd145" class="">
+</p><p id="3e6e39e4-bf56-454e-a5a2-2b94de7ca74b" class=""><strong>Note: </strong>The write up is pretty informal and a bit brain-dumpy. Bear with me!</p><h1 id="a5973839-1969-4ec0-b2b2-5f88313270aa" class="">Methodology</h1><p id="bec3d8f1-88c4-4d05-ae03-a03d4876bdca" class="">I had taken a goal-focused approach to the task (which retrospectively may have caused me to deviate from the original, as the learning objectives didn&#x27;t align). Basically:</p><p id="68e2fec6-551b-45d6-8978-f58f692fbb28" class=""><strong>Populate a USB with content, and wipe it with two different methods. Analyse the device to see what remains.</strong></p><p id="d9df4f9c-c190-426b-a506-0d2f8481043e" class="">From that, I came up with some questions to help guide my actions: </p><ul id="b0935057-ef8c-4031-8c71-f0ac45b8149e" class="bulleted-list"><li>Can I still access files after they&#x27;ve been deleted, but the device not wiped?<ul id="eda21152-52ab-426c-9a4e-46264f1170b4" class="bulleted-list"><li><em>Yes, trivially</em></li></ul></li></ul><ul id="afcf5be6-705a-4755-a410-6c5219d1ac10" class="bulleted-list"><li>Can I view the files after they have been wiped?<ul id="2b457e48-4f47-47e7-9cb2-f031e8151359" class="bulleted-list"><li><em>If I used a recovery tool, or had somehow managed to recover the files, sure</em></li></ul></li></ul><ul id="c7799fac-b331-4aa7-9203-f2bfbd3ea9d2" class="bulleted-list"><li>Can I recover files after they have been wiped?<ul id="0e7ccd38-db20-441c-aedd-a39a71dc678c" class="bulleted-list"><li><em>Yes, but I&#x27;m not exactly sure how</em></li></ul></li></ul><ul id="443bc2f7-0b64-4f5d-8fb5-d67fe9250c67" class="bulleted-list"><li>Can I determine what method has been used to wipe the device?<ul id="566865e8-ed39-4ed3-93b8-9e442b4fff62" class="bulleted-list"><li><em>No idea - Further research needed, but I don&#x27;t know if that data exists - Likely can be inferred</em></li></ul></li></ul><ul id="9cae1b39-91fe-49ef-97fd-3de4439d0c23" class="bulleted-list"><li>Can I determine when was the wipe performed? <ul id="266ed50d-9713-455b-a0c4-a5a6942f0c7d" class="bulleted-list"><li><em>No idea - Further research needed to see if there&#x27;s data specific to this, or if it could be inferred</em></li></ul></li></ul><h2 id="69a9f5e1-3be7-41de-bc7c-67319a14286f" class="">Deviation</h2><ul id="4f4225f8-34d8-4405-9ef0-f3de01df1631" class="bulleted-list"><li>Instead of performing the three wipes - quick format, full format, and a wipe - I deleted and quick formatted</li></ul><ul id="af742c5d-867a-4e36-8930-af87a15ffaa8" class="bulleted-list"><li>Didn&#x27;t use photorec, or run it after each time I did something</li></ul><h3 id="bf04cdd2-be91-419f-bd24-265c03c4a504" class="">Method for Take 2</h3><ul id="4fccb2cc-295d-4857-a836-a6c40a519e6d" class="bulleted-list"><li>Get a fresh USB, populate it with data and image</li></ul><ul id="db7a23a7-acf4-4e9e-9b51-db3a5c4451a1" class="bulleted-list"><li>Perform a quick format and observe</li></ul><ul id="1cae9eec-67f4-4efd-bd97-fd72e7d583c5" class="bulleted-list"><li>Perform a full format and observe, noting any changes and data</li></ul><ul id="f8f0062f-dbee-4a1f-917e-6443597bf2cb" class="bulleted-list"><li>Wipe and observe - one or two passes(Can probably use <em>MiniTool </em>or possible HxD)</li></ul><h1 id="f3093d70-3cd5-47fc-9700-5ae004082c14" class="">Findings</h1><h2 id="960d1a32-c0d6-4783-b6be-a6eec0287455" class="">Overview</h2><p id="83e21006-82fb-4e78-af0d-2c4f62c808a1" class="">Overall, it was possible to recover files after both deleting files and performing a quick wipe. When deleting files, those files were still present within the file system, and could be easily recovered. It was possible to &#x27;recover&#x27; files after performing a quick format using a tool <em>MiniTool</em>, however, due to licensing, those files were not retrieved. </p><p id="966418a3-3410-4c81-a3a0-cc7ba77a6140" class="">When a quick format was performed, these files were removed from within the allocated storage. By comparing the contents of the USB artifacts extracted with <em>FTK Imager, </em>and opened with <em>HxD, </em>it was possible to observe that there were changes to the hex values. </p><h2 id="024d1115-129c-4f4f-abb2-37d1d4d2e9d6" class="">Process Notes</h2><ul id="c3c206aa-8fdb-4ba8-9d5c-45c6b75bd390" class="bulleted-list"><li>Populated USB  with files</li></ul><figure id="7455d048-4626-47d9-a393-086d31a3ab9b" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled.png"><img style="width:1224px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled.png"/></a></figure><ul id="924c50b7-6088-4a49-b4e8-e010ff5ff2be" class="bulleted-list"><li>Deleted files - Was prompted to permanently delete</li></ul><ul id="e603897d-c6ef-45c8-b2fa-44f0d5808a97" class="bulleted-list"><li>Created an image of the freshly wiped drive</li></ul><figure id="7c64da7d-4f67-45d7-9593-494c38e16f8a" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%201.png"><img style="width:558px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%201.png"/></a></figure><ul id="e0ddefe6-518d-4bd6-8ef4-cbfc8dca6c8c" class="bulleted-list"><li>Loaded the image in FTK Imager, right away something interesting popped out - the &quot;Tempo&quot; directory and subdirectory was still listed</li></ul><figure id="f7d2a1ad-d8f5-469e-a5fb-3a899de5960a" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%202.png"><img style="width:761px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%202.png"/></a></figure><ul id="80df968d-6ba4-4394-bc42-4f41a26773df" class="bulleted-list"><li>All the files were still within the &quot;root&quot; folder too, with the expected sizes - Does this mean they were flagged for deletion but still existed?</li></ul><figure id="b1213ca9-2931-43b0-aad0-ca50059c6cde" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%203.png"><img style="width:1023px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%203.png"/></a></figure><ul id="6dcbb7ef-ea4c-4eb5-b313-2c9f1728f6c9" class="bulleted-list"><li>Could trivially recover the files with FTK with &quot;Export Files&quot;</li></ul><figure id="b1563ab4-7dcd-4e82-aa7f-fc6d0d6d590b" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%204.png"><img style="width:509px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%204.png"/></a></figure><ul id="24efcd6f-c325-4c91-89e7-70b3f45a6887" class="bulleted-list"><li>Files were still &quot;in-tact&quot; - Uncertain if anything was modified however, besides the file name (where &quot;!&quot; was prepended on some files&quot;</li></ul><figure id="e11d39a1-f6fd-4143-9d49-fcc315cc8b30" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%205.png"><img style="width:1059px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%205.png"/></a></figure><p id="4b44c4de-3022-4a51-8bd9-6e005f309748" class=""><em>Could still view the media in the &quot;!MG_0790.MOV&quot;</em></p><ul id="031fa7c3-5d0f-488e-a96c-12689701ed4a" class="bulleted-list"><li>Interesting things - &quot;File Slack&quot;<ul id="4161a6eb-b9d3-4caa-a5f2-67814f555328" class="bulleted-list"><li>Need to look more into how filesystems partition data - From a basic understanding, file slack is there to fill a hard drive cluster (??big citation needed there) - To look into more</li></ul></li></ul><ul id="a95296a4-dd31-45a6-80d2-92fec0eaa622" class="bulleted-list"><li>Looking at the other artifacts in the system. <ul id="ddc8bbf1-91f1-4541-8ef3-86aadbfa638c" class="bulleted-list"><li>&quot;[unallocated space]&quot; has files with expected sizes - Assuming it&#x27;s the free space</li></ul><figure id="2a42c20c-fce5-4f6b-8a9f-4673979532d7" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%206.png"><img style="width:947px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%206.png"/></a></figure><ul id="a94454de-e6f8-42ef-8b6a-f417ab241f4b" class="bulleted-list"><li>Noticed some files populated with content from the FTK hex preview, so extracted one to check it out it HxD, specifically &quot;204806&quot;<ul id="5af58e77-5954-49a1-8c8a-df015a202811" class="bulleted-list"><li>A cursory view looked like it was mostly garbage → To look into string extractors and other tools which handle binary - IDA might be worth revisiting. Decided not to dig too deep into the j̶̨̨̳͎̟̺̩̜̼̥͖͓̖͐͂͛͘͜u̸̥̤̇̈́n̵̺̞͓̜̗̰̙͒̀͆͌̏͑̊͊̑͊ķ̸͚͎̟̭̖͌̈́́̕ until I answer the main questions</li></ul></li></ul></li></ul><figure id="820107b0-699b-44fe-b597-d83b02eb8ae2" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%207.png"><img style="width:632px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%207.png"/></a></figure><ul id="d2363fab-90e0-4d34-8221-55e237d5265f" class="bulleted-list"><li>Extracted the content from NONAME [FAT32]<ul id="44f767e8-940e-428c-a506-2f7d42e1a05e" class="bulleted-list"><li>VBR - Volume Boot Record:<ul id="1f8aa85b-311e-4a12-84da-fad3ea77e6b5" class="bulleted-list"><li>Had interesting strings including:<ul id="c46505e4-c4ef-448b-897e-9492696f8542" class="bulleted-list"><li>ex.MSDOS5.0<ul id="13bce7b5-816c-4ee0-a454-a34f846797a4" class="bulleted-list"><li>OEM Name in text (?)</li></ul></li></ul><ul id="bc330b48-6fa6-439d-a425-b03cfddc583c" class="bulleted-list"><li>NAME FAT32</li></ul><ul id="586575ac-0493-4f4b-ab71-05293037ac7b" class="bulleted-list"><li>Disk error. Press any key to restart</li></ul><ul id="4654f89a-5ad9-4aa5-87d5-ba52d40c9f9e" class="bulleted-list"><li>An operating system wasn&#x27;t found. Try disconnecting any drives that don&#x27;t contain an operating system.</li></ul></li></ul></li></ul><ul id="a7b62cf7-5f55-4219-adfb-4801eb6e6d30" class="bulleted-list"><li>FAT1 and FAT2 <ul id="b776c48a-4986-42af-b70d-6ebb1561dcfb" class="bulleted-list"><li>Have the same headers (?)</li></ul></li></ul><ul id="4c834ce1-314c-4302-85e6-4fca432e63c3" class="bulleted-list"><li>reserved sectors<ul id="5e723203-89bd-431c-8de8-4b6fb6d21c5b" class="bulleted-list"><li>Not entirely sure what it serves</li></ul></li></ul></li></ul><ul id="aebf95bb-22d4-4e8a-9c04-df742eaf2cd0" class="bulleted-list"><li>Extracted content from System Volume Information<ul id="c51c7051-0f73-4b4c-98da-d6b650ca85ed" class="bulleted-list"><li>WPSettings.dat<ul id="9f1d9663-f28b-4746-9a3e-5f72d6bce14a" class="bulleted-list"><li>Not sure what the contents are, apparently a file generated by Storage Service (StorSvc) - Enables services for storage settings and external storage expansion <ul id="53e89676-6163-4841-b8c1-510f81e53722" class="bulleted-list"><li>Is this something created by a windows OS when plugged into a computer? Possibly something to look into with a fresh USB and HWB</li></ul></li></ul></li></ul><ul id="f58927d1-7e96-431d-84e3-24233b4a277a" class="bulleted-list"><li>IndexerVolumeGuid - Assigns a unique GUID so windows knows which database to asociate with the drive<ul id="0e64c876-745b-4304-8572-d7644b63c598" class="bulleted-list"><li>GUID assigned to device - identified as {839B6964-8121-4813-9A5C-1B1C00B44C96}</li></ul></li></ul></li></ul><ul id="f81ad01d-8682-483b-a2e4-e807da323f95" class="bulleted-list"><li>Extracted info from Unpartitioned Space [basic disk]<ul id="bc320eae-4d86-4c11-a0b9-fd418e283d85" class="bulleted-list"><li>MBR<ul id="3643656a-70f3-40da-b998-d791ac9de948" class="bulleted-list"><li>Assuming it&#x27;s similar to VBR, as in it tells the system how to handle it. Key things:<ul id="a7bd680b-7a09-4b17-80d0-470be9ff676e" class="bulleted-list"><li>&quot;Invalid partition table. Error loading operating system. Missing operating system&quot;</li></ul></li></ul></li></ul></li></ul><ul id="9fcb6a1e-3eeb-41aa-a0c1-33a213cd3e51" class="bulleted-list"><li>Decided to format the drive (after deletion) - Performed a Quick Format<ul id="8cfb12c6-a239-4d85-b471-04a7f4550e49" class="bulleted-list"><li>Keen to see the difference between deleted files and formatted files - </li></ul><ul id="16d822b4-99a9-45e9-8879-333220e98d54" class="bulleted-list"><li>Keen to also populate a USB, perform a quick format and see if there&#x27;s a difference there too</li></ul></li></ul><ul id="a5b187d8-62b0-460f-a7e6-605f827542b1" class="bulleted-list"><li>Imaged the device again</li></ul><figure id="0168a84e-8493-41fa-8eaa-ad08f78cb911" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%208.png"><img style="width:478px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%208.png"/></a></figure><ul id="d86fa7ef-e689-4cfb-8cb7-a2414dc99348" class="bulleted-list"><li>Added image as evidence in FTK imager</li></ul><ul id="a153227e-b768-42c4-b6e7-b10947204e6b" class="bulleted-list"><li>Initial observations show that the deleted folders and files were not present, </li></ul><div id="11fd2266-ad65-4e80-a16c-a4012f5e5a23" class="column-list"><div id="9a03657f-62ad-4982-a0d1-05a04e120cc5" style="width:50%" class="column"><figure id="9995e73d-48df-426b-821c-11ac120cbde4" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%209.png"><img style="width:265px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%209.png"/></a></figure></div><div id="1bb82e6c-9b06-40da-8e0a-7afaed5b6ab7" style="width:50%" class="column"><figure id="973a4979-da2f-4ba5-b51c-37c007bccede" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2010.png"><img style="width:262px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2010.png"/></a></figure></div></div><ul id="6b3e711e-d5e1-430e-84a3-e7d7da868429" class="bulleted-list"><li>Extracted and observed the artifacts again, this time comparing with those from 002_USB_E_DeletedFiles <ul id="4d263158-6895-4a2c-8cee-48c476772e9b" class="bulleted-list"><li>NONAME [FAT32]<ul id="f4f72b2a-5b69-4e40-acb0-093c889d87f4" class="bulleted-list"><li>VBR</li></ul><figure id="7d13b1ac-b931-475f-b10e-92d47089624f" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2011.png"><img style="width:682px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2011.png"/></a></figure><ul id="28d8b7a7-640a-4eeb-9b25-070dceeeab98" class="bulleted-list"><li>reserved sectors</li></ul><ul id="6cd102e1-8ef6-4738-93fd-df45b7d49072" class="bulleted-list"><li>FAT2</li></ul><ul id="29ac6e33-f4fc-42c9-834d-99d409185052" class="bulleted-list"><li>FAT1</li></ul></li></ul><ul id="8b421e83-f5d5-4e48-9fb2-eeff55876e46" class="bulleted-list"><li>System Volume Information<ul id="20cea898-48cb-4b55-bef6-dd122e2f32fe" class="bulleted-list"><li>WPSettings.dat</li></ul><figure id="21edc527-3664-410e-8148-7da718b2fdc2" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2012.png"><img style="width:713px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2012.png"/></a></figure><ul id="65912e8a-eb37-4d50-b974-3eac8620f6b7" class="bulleted-list"><li>IndexerVolumeGuid<ul id="f9d9b72c-ade2-41f2-b6fa-52ba0a4e4eec" class="bulleted-list"><li>Minor differences - Would be curious to see what the comparison with assembly calls means (if anything_</li></ul></li></ul></li></ul><ul id="2c393514-3bb6-4c35-80ab-def0a2a79db7" class="bulleted-list"><li>[unallocated space]<ul id="6aaf1ad1-8d95-40dd-9d41-706d6f057a89" class="bulleted-list"><li>204806<ul id="f8c28e92-b969-40ff-93c6-360b9190c87b" class="bulleted-list"><li>Most was new - Still looked like all garbage. Likely if I missed something, as I was only stepping through each comparison. Highlighting for all comparisons for differences may have made any similar content obvious</li></ul></li></ul><ul id="6a5a6fc4-e117-4d8e-b3d5-a4be8d28a716" class="bulleted-list"><li>025606<ul id="e0b7e10f-591d-476b-b3c2-c3071cf43c9a" class="bulleted-list"><li>Files were identical - Got a prompt from HxD. Curious why this was identical, but 204806 was seemingly unique</li></ul></li></ul></li></ul><ul id="f5820aed-b373-4c3a-9b88-d7c329dc7028" class="bulleted-list"><li>Unpartitioned Space [basic disk]<ul id="1db3d392-3a2e-422a-b240-452ddd0ef0d6" class="bulleted-list"><li>MBR<ul id="0044aecd-a768-4ccf-a7be-a1312f4465da" class="bulleted-list"><li>Identical</li></ul></li></ul></li></ul></li></ul><ul id="5c82c69f-551d-411d-ad49-23d9684191bb" class="bulleted-list"><li>Now that I&#x27;d checked the differences, I tried to figure out what was going on and if I could recover information from the unallocated space<ul id="9204816f-4cac-4bf3-9d09-3be9fc083556" class="bulleted-list"><li>Mounted the device image using FTK (G:)</li></ul><figure id="baa3b96d-609f-49ee-b05b-a06cbe201c42" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2013.png"><img style="width:575px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2013.png"/></a></figure><ul id="33ad08bd-3044-44a5-82ff-063d3639ff27" class="bulleted-list"><li>Used <em>MiniTool Partition Wizard </em>to try to recover data from the logical disk:</li></ul><figure id="750c89c9-0443-41a8-b56f-daab8f8bea18" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2014.png"><img style="width:942px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2014.png"/></a></figure><ul id="a59bff69-3fb6-4a30-a512-a4d9e9a7ec08" class="bulleted-list"><li>Limited to what I could observe from the free version of the tool (uncertain if filenames and associated metadata is preserved in unallocated space), but there were some interesting observations:<ul id="74a1f073-f3b0-4df5-9cba-7c6f614aaf51" class="bulleted-list"><li>Not all information from the original selected files were present - For example, one jpeg from the original file set was missing</li></ul><ul id="062b0eca-ae8f-4b95-b6e3-30b5e020edfc" class="bulleted-list"><li>There were duplicate files </li></ul><figure id="70863b14-0679-44a8-87c7-126d3f11feaf" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2015.png"><img style="width:318px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2015.png"/></a></figure><ul id="27b91d12-cbc6-4a7a-b868-cc7bc5f2b148" class="bulleted-list"><li>There were also files which weren&#x27;t present in the original batch of data:</li></ul><figure id="4bcae15f-1c82-4b8b-9015-eb5a70448abe" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2016.png"><img style="width:1625px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2016.png"/></a></figure><figure id="11598d92-91c5-4740-9bb5-e9edb17667f3" class="image"><a href="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2017.png"><img style="width:1127px" src="USB%20Analysis%20-%20Take%201%207455d048462647d9a393086d31a3ab9b/Untitled%2017.png"/></a></figure><ul id="7e1dbe4a-4066-4de4-94f6-f2f2d7aa08bf" class="bulleted-list"><li>The size of the files were smaller than the original files<ul id="2388b6a2-0130-49ab-b011-102e9f6da39b" class="bulleted-list"><li>Uncertain if this means a loss in data, or something else</li></ul></li></ul></li></ul></li></ul><h1 id="375e1953-0021-4d69-a895-2287112c3e68" class="">Observations</h1><p id="c1f27c0b-1266-4849-8af5-856d54a71d83" class="">Overall I feel there&#x27;s some fundamental concepts I don&#x27;t understand with file systems. However, the exercise was a good starting point to find what to look into, as detailed in the gaps in knowledge. I didn&#x27;t have many issues with the tooling however, but should spend more care to look for more tools which may parse things a bit nicer, particularly when making comparisons or trying to find strings. </p><p id="04f909e2-b58b-404e-854b-02c0cc864baf" class="">Some other general observations:</p><ul id="1f9eb55d-23c1-4c83-8771-1131eea28d9b" class="bulleted-list"><li>My naming conventions for evidence is rather inconsistent, and ways that I store evidence and label it reflects that. I can see myself encountering issues if I don&#x27;t have some sort of standard for categorisation.</li></ul><ul id="28e889fa-a5eb-41fa-abcd-5e7baafde929" class="bulleted-list"><li>There were two points where I had lost track of where I got up to, and couldn&#x27;t back track as a result of not documenting the steps taken.</li></ul><ul id="fc03120d-d426-47cd-9922-095d9455e170" class="bulleted-list"><li>I encountered a &quot;fork in the road&quot; with my approach that I didn&#x27;t consider when planning the work to be performed. Retrospectively, a more ideal approach would be to: <ol id="fb612c43-7ba8-4793-a530-a6ea516c2550" class="numbered-list" start="1"><li>Image the USB with all content populated</li></ol><ol id="7e4943bb-e059-4a23-a82f-e0f8c7f242b3" class="numbered-list" start="2"><li>Mount that image, delete the files, create another image </li></ol><ol id="e1f789e0-4aff-4885-8bfc-8f4a7451cc88" class="numbered-list" start="3"><li>Mount the original USB again, perform a format, and create an image  </li></ol><ol id="016c65a5-c86b-4687-a692-82821b4fd73d" class="numbered-list" start="4"><li>Analyse the two and compare as necessary</li></ol><p id="34307681-9649-471f-bbaf-38c1312c5cc7" class="">This may have avoided any unknown changes which may occur when formatting a device after files have been deleted. The approach taken, while was illustrative to determine the difference on a high level, may introduce uncertainty.</p></li></ul><ul id="781f7a88-9a53-4852-96ef-1b7d7325ff9b" class="bulleted-list"><li>Could have also made a comparison in HxD by using the &#x27;open image&#x27; functionality and similar - more of a top-down approach</li></ul><ul id="4501d9c1-5831-478e-83aa-e3edd3cbfa4d" class="bulleted-list"><li>Overall, I didn&#x27;t pay attention to details which are likely to contain important information, such as file size, number of files etc. Instead, I took more of a &#x27;high-level observation&#x27; approach. While I learned a lot about the device, I feel like there was much that was missed. </li></ul><ul id="af1f0bfa-bd05-4bd5-81c5-5966bdfcd447" class="bulleted-list"><li>My approach may have been more &#x27;what can I do&#x27; instead of &#x27;what happened?&#x27;</li></ul><ul id="81ca8f2d-7e45-4131-8234-8fa1a035062f" class="bulleted-list"><li>Next time I&#x27;ll buy a USB and image it with write block (bonus if I can find a HWB for USB)</li></ul><ul id="681eb4f1-6975-42b5-8e25-d104642f575c" class="bulleted-list"><li>I couldn&#x27;t really determine if the &quot;files were still there&quot; after performing a quick format, as I didn&#x27;t know how the file system works, i only could speculate given there were changes in the hex values</li></ul><h2 id="4a83a4be-8b4b-453d-a115-3a391c4ad1f9" class="">Lessons learned</h2><ul id="5088515f-2800-4b9d-b83f-bbe0a9bbc035" class="bulleted-list"><li>Became more comfortable with FTK Imager, particularly imaging devices, mounting them, extracting information, and using the evidence tree (tree?).</li></ul><ul id="25b9890a-c944-48eb-a167-22ff3b3e2090" class="bulleted-list"><li>Gained a better, while still basic, level of file systems especially with allocated and unallocated space</li></ul><ul id="699f017f-4f2c-4032-ad56-af628631f59c" class="bulleted-list"><li>Learned how to use HxD for the first time, will keep practicing with it to understand the nuances </li></ul><ul id="cfa63f43-bb96-401b-8551-955bbe4b820b" class="bulleted-list"><li>Practical analysis like this has been incredibly useful for learning - Starting to change my approach from <em>&quot;Must have a clear goal&quot; </em>to <em>&quot;What does this thing look like and how does it work?&quot;</em></li></ul><ul id="7c874ae2-0e6e-43bb-b284-225a0a3c2e19" class="bulleted-list"><li>While a useful exercise, I missed the mark on the original objectives, which will definitely cause trouble if in the future if I&#x27;m fully aware of what&#x27;s to do.</li></ul><h2 id="ce7e69ea-b10b-43e7-a2a0-ca7f755a6b55" class="">Gaps in Knowledge </h2><p id="f1b93585-318a-45b0-a990-028fe8f2baba" class=""><strong><em>Areas I struggled with a bit, or have only scratched the surface on. </em></strong></p><ul id="62b3a64e-a92e-43e5-a355-07f2fc9d3b1b" class="bulleted-list"><li>File allocation tables and everything to do about them</li></ul><ul id="c57abddb-e62a-4f5d-b6a7-2512286cbc0a" class="bulleted-list"><li>What are unallocated and allocated space? <ul id="fdc5120d-42c1-4c1d-8b8a-be108325fc1a" class="bulleted-list"><li>What is relevant about them, and what do they hold?</li></ul></li></ul><ul id="57c42635-e5c3-4452-9ed7-829bdc68b4ff" class="bulleted-list"><li>How is data populated or represented in a file system, and how is it removed?</li></ul><ul id="36e2b6ee-19d3-4cde-b351-3d6c2cc11e80" class="bulleted-list"><li>How does the USB interact with a system? <ul id="1d3b0393-9470-4072-8bee-97d2aab33ba0" class="bulleted-list"><li>What purpose do the headers serve?</li></ul></li></ul><ul id="381ffdeb-db5a-4608-a3c3-7da749e81543" class="bulleted-list"><li>What exactly occurs when data is written to a drive, or deleted? </li></ul><ul id="9b99b883-f63b-4124-bc3b-e4458876220a" class="bulleted-list"><li>What interesting information can a USB give? </li></ul><p id="7f578bb3-c285-4788-92a7-77f79d352405" class="">
+</p><p id="bd70bdb3-5a7b-4f11-9923-a7cac7915ed4" class=""><strong><em>Questions I&#x27;ll likely answer myself with some study</em></strong></p><ul id="cc12585d-ba66-450c-b956-a37c657f1418" class="bulleted-list"><li>What happens when a file is deleted? </li></ul><ul id="1dc2c429-00f1-49f1-80c3-b961f6cf1678" class="bulleted-list"><li>Why can I still recover &quot;deleted&quot; files? Why are files still there?</li></ul><ul id="4f77703f-934d-4aee-adca-cb3e54d8dbf1" class="bulleted-list"><li>What exactly is file slack?</li></ul><ul id="0d9ea76e-207c-4349-b887-b597d61ce71a" class="bulleted-list"><li>How do I know what garbage binary looks like? <ul id="1d69f3dd-a246-4fd2-b08d-769bd4b8cfef" class="bulleted-list"><li>Are there better ways to parse the information?</li></ul></li></ul><ul id="8a250d3c-dae4-4bd1-b2a4-ba456068393d" class="bulleted-list"><li>What do all the artifacts mean? <ul id="c1eefb8f-a828-427a-a05e-8618f65ab92e" class="bulleted-list"><li>What is relevant about each?</li></ul></li></ul><ul id="8b2b1256-b33e-44e9-a500-786781d191b3" class="bulleted-list"><li>What relevance does a GUID have?<ul id="1bd16496-6b6c-4ed4-af15-2cc198e1c2e6" class="bulleted-list"><li>How can I tell if it&#x27;s static, or dynamically set?</li></ul></li></ul><ul id="8672e3e2-f1e8-40e9-98df-87289cdf0814" class="bulleted-list"><li>How does data recovery work? </li></ul><ul id="2da671d9-2ced-483c-9be5-574d620c2dd4" class="bulleted-list"><li>What is unique about a FAT32 system?</li></ul><ul id="bcd01717-1a0b-4e46-8d34-666c0cee97ee" class="bulleted-list"><li>What were the changes made to the hex values and what does it mean?</li></ul><p id="2db4ad76-d4fa-4c35-ad77-89d8be8486c5" class="">
+</p><p id="2aed8785-0710-4b74-b66a-e496bf03add3" class=""><strong><em>General questions with questionable answers</em></strong></p><ul id="4265e1aa-eb43-4f9b-8911-f613de1db19f" class="bulleted-list"><li>How do I keep on track with the goal? <ul id="9120ab17-6944-48a0-af8e-5571fb45b6e0" class="bulleted-list"><li>More importantly, how do I make sure I interpret the goal correctly to begin with?</li></ul></li></ul><ul id="aa43ffb4-dacd-47aa-a8e8-e0449a8c5512" class="bulleted-list"><li>What ways can I improve my note taking and presentation of information?</li></ul><p id="8db631cf-570a-4a0e-95e5-40e208267e6f" class="">
+</p><p id="b40af031-54f7-4222-88e4-ba8eac210597" class="">
+</p><p id="2f9ef8c9-c5e9-4247-b0bb-e8cd72f26e2c" class="">
+</p></div></article></body></html>
